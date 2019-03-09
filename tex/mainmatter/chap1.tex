@@ -1,0 +1,73 @@
+%%%%
+\chapter{Install Haskell and your first program Guess Number}
+
+ \section{Build Tools}
+
+ Nix
+ Stack
+
+[https://docs.haskellstack.org/en/stable/README/](https://docs.haskellstack.org/en/stable/README/)
+
+make sure `stack --version` outputs latest stack version, currently `Version 1.6.5`.
+
+`stack upgrade`
+
+ Editor Integration
+
+ VScode with haskell-ide-engine
+
+Haskell Syntax Highlight
+
+[haskell-ide-engine](https://github.com/haskell/haskell-ide-engine)
+
+Install on MacOS, you need to install `icu4c` on your machine.
+```
+git clone https://github.com/haskell/haskell-ide-engine
+cd haskell-ide-engine
+make
+```
+
+
+```bash
+stack install hoogle
+
+hoogle generate
+stack install
+```
+
+ Stack
+
+```bash
+stack version
+
+stack upgrade
+```
+
+ Your first haskell program
+
+\verb|stack new guessNumber simple|
+
+\begin{lstlisting}[language=haskell]
+module Main where
+
+import           Control.Monad
+import           Data.Ord      (compare)
+import           System.IO     (readLn)
+import           System.Random (randomRIO)
+
+
+guess :: Int -> IO ()
+guess secretNumber = do
+    print "guess a number"
+    guessNumber <- readLn :: IO Int
+    case compare guessNumber secretNumber of
+        LT -> (print "Too Small!") >> (guess secretNumber)
+        EQ -> print "You Win!"
+        GT -> (print "Too big!") >> (guess secretNumber)
+
+
+main :: IO ()
+main = do
+    secretNumber <- randomRIO (0, 100) :: IO Int
+    guess secretNumber
+\end{lstlisting}
