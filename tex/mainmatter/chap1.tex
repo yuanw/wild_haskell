@@ -45,9 +45,9 @@ stack upgrade
 
  Your first haskell program
 
-\verb|stack new guessNumber simple|
+% \verb|stack new guessNumber simple|
 
-\begin{lstlisting}[language=haskell]
+\begin{minted}{haskell}
 module Main where
 
 import           Control.Monad
@@ -70,4 +70,5 @@ main :: IO ()
 main = do
     secretNumber <- randomRIO (0, 100) :: IO Int
     guess secretNumber
-\end{lstlisting}
+
+\end{minted}

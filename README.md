@@ -4,3 +4,5 @@ My terrible attempt to compile various source into a Haskell book balances theor
 
 
 To understand computation is its own reward.
+
+[PDF](tex/mybook.pdf)
