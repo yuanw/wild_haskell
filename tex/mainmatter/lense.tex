@@ -1,8 +1,8 @@
 %%%
 \chapter{Learning Lens}
 
-
-The content of this chapter comes fron Simon Peyton Jones's \href{https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation}{Lenses: Compositional data access and mainpulation} talk.
+The content of this chapter comes fron Simon Peyton Jones's \href{https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation}{Lenses: Compositional data access and mainpulation} talk,
+and \href{https://www.youtube.com/watch?v=cefnmjtAolY}{Edward Kmett's NYC Haskell Meetup talk}.
 
 \section{Motivation}
 
@@ -90,7 +90,8 @@ You may think `Lens'` looks nothing like `LensR`, but they are actually isomorph
 If `A` and `B` are isomorphic, it means we are getting `B` to `A` without lost any information, and vice verse.
 \end{WrapText}
 
-Before proving `Lens'` and `LensR` is isomorphic, allow me introduce two oddly looking functors `Const` and `Identity`.
+Before proving \textbf{Lens} and \textbf{LensR} is isomorphic,
+allow me introduce two oddly looking functors `Const` and `Identity`.
 
 
 Break Down::
@@ -181,8 +182,9 @@ data Lens s a = Lens (s -> Store a s)
 
 
 \subsection{Semantic Editor Combinator}
+Let's start with Setter, which is a nice entry point for learning Lens.
 
-The Power is in the dot
+\subsubsection{the Power is in the dot}
 \vspace{1mm}
 \begin{minted}{haskell}
 (.)         :: (b -> c) -> (a -> c) -> (a -> c)
@@ -192,83 +194,9 @@ The Power is in the dot
 \vspace{1mm}
 
 
-\begin{WrapText}
-\href{https://www.reddit.com/r/haskellquestions/comments/ayi445/help_me_understand_the_function_and_its_type}{Detail Explantation}
-
-\begin{minted}{haskell}
-(.) :: (b -> c) -> (a -> b) -> a -> c
-f . g = \ t -> f (g t)
-\end{minted}
 
 
-\begin{align*}
-& ((.).(.)) (+1) (+) 10 10 = 21 \\
-&  ((.).(.)) (+1) (+) 10 10 \\
-& =  (.)((.) (+1)) (+) 10 10 \\
-& =  ((.) (+1)) (+ 10) 10   \\
-& = ((+1). (+10)) 10 \\
-& = (+1) ((+10) 10) \\
-& = (+1) (10 + 10) \\
-& = 21
-\end{align*}
-
-\begin{minted}{haskell}
-(.).(.) :: (b -> c) -> (a -> b) -> a -> c
-dotF . dotG :: (b -> c) -> (a -> c) -> a -> c
-dotF :: b -> c
-dotG :: a -> b
-\end{minted}
-
-since \textbf{dotF} is just an alias to  \textbf{(.)}
-\begin{equation}
-dotF :: (u -> v) -> (s -> u) -> s -> v
-(u -> v) -> (s -> u) -> s -> v === b -> c
-\end{equation}
-therefore
-
-\begin{equation}
-b === (u -> v) \\
-c === (s -> u) -> s -> v
-\end{equation}
-
-`dotG` is also an alias to `(.)`
-
-\begin{equation}
-dotG :: (y -> z) -> (x -> y) -> x -> z
-(y -> z) -> (x -> y) -> x -> z === a -> b
-\end{equation}
-therefore
-
-\begin{equation}
-a === (y -> z)
-b === (x -> y) -> x -> z
-\end{equation}
-
-since \textbf{b} appears on both side
-
-\begin{equation}
-a === y -> z
-b === (u -> v)
-b === (x -> y) -> x -> z
-c === (s -> u) -> s -> v
-\end{equation}
-
-we can deduct
-
-\begin{align*}
-u &=== x -> y  \\
-v &=== x -> z
-\end{align*}
-
-therefore \begin{equation}c === (s -> x -> y) -> s -> x -> z\end{equation}
-
-\begin{align*}
-(.).(.) & === a -> c \\
-(.).(.) & === (y -> z) -> (s -> x -> y) -> s -> x - z
-\end{align*}
-\end{WrapText}
-
-we can generalize this to any functor
+we can generalize this to any functor. \textbf{(.)} is the \textbf{fmap} for the functor instance.
 
 \begin{minted}{haskell}
 fmap                :: Functor f  => (a -> b) -> f a -> f b
@@ -276,10 +204,12 @@ fmap . fmap         :: ( Functor f, Functor g)   => (a -> b) -> f (g a) -> f (g 
 fmap . fmap . fmap  :: (Functor f, Functor g, Functor h) => (a -> b) -> f (g (h a)) -> f (g (h b))
 \end{minted}
 
-it means we compose a function under arbitrary depth Functor
-Semantic Editor Combinator
+This means we compose a function under arbitrary depth Functor
+\href{http://conal.net/blog/posts/semantic-editor-combinators}{Semantic Editor Combinator}
 
-`type SEC s t a b = (a -> b) -> s -> t`
+\begin{minted}{haskell}
+type SEC s t a b = (a -> b) -> s -> t
+\end{minted}
 it like a functor (a -> b) -> f a -> f b
 fmap is Semantic Editor Combinator
 `fmap . fmap` is also a SEC
@@ -287,7 +217,7 @@ fmap is Semantic Editor Combinator
 so we use `s` to generalize `f a`,  `f (g a)`, `f (g (h a))` and `t` to generalize `f b`,  `f (g b)`, `f (g (h b))`.
 It may seems counterintuitive at first, we lost the relation between a and s, b and t. But it allows us to have an unified type represents them.
 Functor is a semantic Editor Combinator
-map :: Functor f => SEC (f a) (f b) a b
+fmap :: Functor f => SEC (f a) (f b) a b
 
 first is a also SEC, fmap is a SEC
 
@@ -487,9 +417,6 @@ updateSegment = (segmentStart .~ makePoint (10, 10)) . (segmentEnd .~ makePoint 
 
 \todo{Add exception handle in the guess number program}
 
-
-
-
 References
 \begin{itemize}
  \item \href{https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation}{SPJ Lenses: compositional data access and manipulation}
@@ -503,3 +430,80 @@ References
  \item \url{https://www.reddit.com/r/haskell/comments/9ded97/is_learning_how_to_use_the_lens_library_worth_it/e5hf9ai/}
  \item \url{https://blog.jle.im/entry/lenses-products-prisms-sums.html}
 \end{itemize}
+
+
+\begin{WrapText}
+  \href{https://www.reddit.com/r/haskellquestions/comments/ayi445/help_me_understand_the_function_and_its_type}{Detail Explantation}
+
+  \begin{minted}{haskell}
+  (.) :: (b -> c) -> (a -> b) -> a -> c
+  f . g = \ t -> f (g t)
+  \end{minted}
+
+
+  \begin{align*}
+  & ((.).(.)) (+1) (+) 10 10 = 21 \\
+  &  ((.).(.)) (+1) (+) 10 10 \\
+  & =  (.)((.) (+1)) (+) 10 10 \\
+  & =  ((.) (+1)) (+ 10) 10   \\
+  & = ((+1). (+10)) 10 \\
+  & = (+1) ((+10) 10) \\
+  & = (+1) (10 + 10) \\
+  & = 21
+  \end{align*}
+
+  \begin{minted}{haskell}
+  (.).(.) :: (b -> c) -> (a -> b) -> a -> c
+  dotF . dotG :: (b -> c) -> (a -> c) -> a -> c
+  dotF :: b -> c
+  dotG :: a -> b
+  \end{minted}
+
+  since \textbf{dotF} is just an alias to  \textbf{(.)}
+  \begin{equation}
+  dotF :: (u -> v) -> (s -> u) -> s -> v
+  (u -> v) -> (s -> u) -> s -> v === b -> c
+  \end{equation}
+  therefore
+
+  \begin{equation}
+  b === (u -> v) \\
+  c === (s -> u) -> s -> v
+  \end{equation}
+
+  `dotG` is also an alias to `(.)`
+
+  \begin{equation}
+  dotG :: (y -> z) -> (x -> y) -> x -> z
+  (y -> z) -> (x -> y) -> x -> z === a -> b
+  \end{equation}
+  therefore
+
+  \begin{equation}
+  a === (y -> z)
+  b === (x -> y) -> x -> z
+  \end{equation}
+
+  since \textbf{b} appears on both side
+
+  \begin{equation}
+  a === y -> z
+  b === (u -> v)
+  b === (x -> y) -> x -> z
+  c === (s -> u) -> s -> v
+  \end{equation}
+
+  we can deduct
+
+  \begin{align*}
+  u &=== x -> y  \\
+  v &=== x -> z
+  \end{align*}
+
+  therefore \begin{equation}c === (s -> x -> y) -> s -> x -> z\end{equation}
+
+  \begin{align*}
+  (.).(.) & === a -> c \\
+  (.).(.) & === (y -> z) -> (s -> x -> y) -> s -> x - z
+  \end{align*}
+  \end{WrapText}

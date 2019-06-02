@@ -1,0 +1,9 @@
+%%%
+\chapter{STM}
+
+\section{TVar}
+
+Shared memory location that support atomic memory transcations.
+
+\mint{haskell}|newTVar :: a -> STM (TVar a)|
+\mint{haskell}|newTVarIO :: a -> IO (TVar a)|
