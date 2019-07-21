@@ -1,15 +1,33 @@
 %%%%
 \chapter{Your first Haskell program}
 
-\section{Build Tools}
+\section{Setup GHC and Build Tool(s)}
+
+In the current Haskell ecosystem, there are 3 major build tools: cabal, stack, and Nix.
+\subsection{cabal via ghcup}
+\url{https://github.com/haskell/ghcup#installation}
+
 \subsection{Stack}
 
 \url{https://docs.haskellstack.org/en/stable/README/}
 
-make sure `stack --version` outputs latest stack version, currently `Version 1.10.1`.
+make sure `stack --version` outputs latest stack version, currently `Version 2.2.0`.
 
 `stack upgrade --git`
-\todo{Add Nix and Cabal}
+\subsection{Nix}
+Nix is not avaible for windows out of box.
+
+\url{https://nixos.org/nixos/nix-pills/install-on-your-running-system.html}
+
+\url{https://github.com/Gabriel439/haskell-nix}
+\begin{minted}{bash}
+curl https://nixos.org/nix/install | sh
+nix-env --install cabal2nix
+nix-env --install nix-prefetch-git
+\end{minted}
+
+If you already installed cabal through whatever methods, you probably want to skip install cabal via nix.
+
 \section{Editor Integration}
 \subsection{VScode with Haskell IDE Engine}
 [haskell-ide-engine](https://github.com/haskell/haskell-ide-engine)
